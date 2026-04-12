@@ -17,20 +17,20 @@
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      padding: 2rem 1rem;
+      padding: 1rem;
     }
 
     .card {
       background: #fff;
       border-radius: 14px;
       box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-      padding: 2rem 2.25rem;
+      padding: 1.25rem 2rem;
       max-width: 860px;
       width: 100%;
     }
 
     /* ── Header ── */
-    .header { margin-bottom: 1.5rem; }
+    .header { margin-bottom: 0.9rem; }
     .course-tag {
       display: inline-block;
       font-size: 0.72rem;
@@ -59,8 +59,8 @@
     .legend {
       display: flex;
       flex-wrap: wrap;
-      gap: 1.1rem;
-      margin-bottom: 1.25rem;
+      gap: 0.8rem;
+      margin-bottom: 0.8rem;
     }
     .legend-item {
       display: flex;
@@ -87,8 +87,8 @@
     .chart-wrapper {
       position: relative;
       width: 100%;
-      height: 380px;
-      margin-bottom: 1.25rem;
+      height: 320px;
+      margin-bottom: 0.9rem;
     }
 
     /* ── Zoom controls ── */
@@ -96,7 +96,7 @@
       display: flex;
       align-items: center;
       gap: 0.6rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
       flex-wrap: wrap;
     }
     .zoom-label {
@@ -127,8 +127,8 @@
     .panels {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-bottom: 1.25rem;
+      gap: 0.75rem;
+      margin-bottom: 0.9rem;
     }
     @media (max-width: 560px) { .panels { grid-template-columns: 1fr; } }
 
@@ -200,26 +200,26 @@
   <div class="header">
     <div class="course-tag">CSE320 · Growth of Functions</div>
     <h1>Θ(n²) Tight Bound Visualization</h1>
-    <div class="subtitle">f(n) = 6n² + 100n + 300 &nbsp;·&nbsp; c₁ = 5, c₂ = 7, n₀ = 103</div>
+    <div class="subtitle">f(n) = 4n² + 8n + 12 &nbsp;·&nbsp; c₁ = 3, c₂ = 5, n₀ = 10</div>
   </div>
 
   <!-- Legend -->
   <div class="legend">
     <div class="legend-item">
       <div class="legend-line dashed"></div>
-      <span style="color:#2563eb">f(n) = 6n² + 100n + 300</span>
+      <span style="color:#2563eb">f(n) = 4n² + 8n + 12</span>
     </div>
     <div class="legend-item">
       <div class="legend-line" style="background:#16a34a"></div>
-      <span style="color:#16a34a">c₁·n² = 5n²&nbsp; (lower bound)</span>
+      <span style="color:#16a34a">c₁·n² = 3n²&nbsp; (lower bound)</span>
     </div>
     <div class="legend-item">
       <div class="legend-line" style="background:#dc2626"></div>
-      <span style="color:#dc2626">c₂·n² = 7n²&nbsp; (upper bound)</span>
+      <span style="color:#dc2626">c₂·n² = 5n²&nbsp; (upper bound)</span>
     </div>
     <div class="legend-item">
       <div class="legend-line" style="background:repeating-linear-gradient(to right,#94a3b8 0,#94a3b8 5px,transparent 5px,transparent 9px)"></div>
-      <span style="color:#64748b">n₀ = 103&nbsp; (threshold)</span>
+      <span style="color:#64748b">n₀ = 10&nbsp; (threshold)</span>
     </div>
   </div>
 
@@ -231,28 +231,28 @@
   <!-- Zoom -->
   <div class="zoom-row">
     <span class="zoom-label">Zoom:</span>
+    <button class="zoom-btn" data-max="20">n = 20</button>
+    <button class="zoom-btn active" data-max="40">n = 40</button>
     <button class="zoom-btn" data-max="80">n = 80</button>
-    <button class="zoom-btn" data-max="120">n = 120</button>
-    <button class="zoom-btn active" data-max="160">n = 160</button>
-    <button class="zoom-btn" data-max="220">n = 220</button>
+    <button class="zoom-btn" data-max="160">n = 160</button>
   </div>
 
   <!-- Info panels -->
   <div class="panels">
     <div class="panel panel-before">
-      <div class="panel-title">✗ &nbsp;Before n₀ = 103</div>
-      <p>f(n) exceeds the upper bound 7n². The extra terms 100n + 300 are still large enough to push f(n) above c₂·n². The sandwich does <em>not</em> yet hold — hover n &lt; 103 to see this.</p>
+      <div class="panel-title">✗ &nbsp;Before n₀ = 10</div>
+      <p>f(n) exceeds the upper bound 5n². The extra terms 8n + 12 are still large enough to push f(n) above c₂·n². The sandwich does <em>not</em> yet hold — hover n &lt; 10 to see this.</p>
     </div>
     <div class="panel panel-after">
-      <div class="panel-title">✓ &nbsp;After n₀ = 103</div>
-      <p>f(n) is permanently sandwiched between 5n² and 7n². As n grows, n² dominates and the lower-order terms become negligible — exactly what Θ notation captures.</p>
+      <div class="panel-title">✓ &nbsp;After n₀ = 10</div>
+      <p>f(n) is permanently sandwiched inside the green band between 3n² and 5n². As n grows, n² dominates and the lower-order terms become negligible — exactly what Θ notation captures.</p>
     </div>
   </div>
 
   <!-- Formal statement -->
   <div class="formal">
-    <strong>Formal statement:</strong>&nbsp; ∃ c₁ = 5, c₂ = 7, n₀ = 103 such that<br>
-    5n² &nbsp;≤&nbsp; 6n² + 100n + 300 &nbsp;≤&nbsp; 7n² &nbsp; for all n ≥ 103<br>
+    <strong>Formal statement:</strong>&nbsp; ∃ c₁ = 3, c₂ = 5, n₀ = 10 such that<br>
+    3n² &nbsp;≤&nbsp; 4n² + 8n + 12 &nbsp;≤&nbsp; 5n² &nbsp; for all n ≥ 10<br>
     <strong>∴</strong>&nbsp; f(n) = Θ(n²)
   </div>
 
@@ -269,23 +269,25 @@
 
 <script>
   // ── Data generation ──────────────────────────────────────────────
-  const N0 = 103;
+  // f(n) = 4n² + 8n + 12 = Θ(n²)
+  // c₁ = 3, c₂ = 5, n₀ = 10
+  // Verify: at n=10, f(10)=492 ≤ 5(100)=500 ✓; at n=9, f(9)=408 > 5(81)=405 ✗
+  const N0 = 10;
 
   function buildDatasets(maxN) {
-    const step = maxN <= 100 ? 1 : 2;
-    const labels = [], fArr = [], loArr = [], hiArr = [];
+    const step = maxN <= 30 ? 1 : (maxN <= 80 ? 1 : 2);
+    const fArr = [], loArr = [], hiArr = [];
     for (let n = 1; n <= maxN; n += step) {
-      labels.push(n);
-      fArr.push(6*n*n + 100*n + 300);
-      loArr.push(5*n*n);
-      hiArr.push(7*n*n);
+      fArr.push({ x: n, y: 4*n*n + 8*n + 12 });
+      loArr.push({ x: n, y: 3*n*n });
+      hiArr.push({ x: n, y: 5*n*n });
     }
-    return { labels, fArr, loArr, hiArr };
+    return { fArr, loArr, hiArr };
   }
 
   // ── Chart setup ──────────────────────────────────────────────────
   const ctx = document.getElementById("chart").getContext("2d");
-  let currentMax = 160;
+  let currentMax = 40;
   let chart;
 
   function formatK(v) {
@@ -293,42 +295,47 @@
   }
 
   function buildChart(maxN) {
-    const { labels, fArr, loArr, hiArr } = buildDatasets(maxN);
+    const { fArr, loArr, hiArr } = buildDatasets(maxN);
 
     if (chart) chart.destroy();
 
     chart = new Chart(ctx, {
       type: "line",
       data: {
-        labels,
         datasets: [
+          // Order matters for fill: lower (0) → upper fills to it (1) → f(n) on top (2)
           {
-            label: "f(n) = 6n² + 100n + 300",
-            data: fArr,
-            borderColor: "#2563eb",
-            borderWidth: 2.5,
-            borderDash: [7, 3],
-            pointRadius: 0,
-            tension: 0.1,
-            order: 1,
-          },
-          {
-            label: "c₁·n² = 5n²  (lower)",
+            label: "c₁·n² = 3n²  (lower)",
             data: loArr,
             borderColor: "#16a34a",
             borderWidth: 2.5,
             pointRadius: 0,
             tension: 0.1,
-            order: 2,
+            fill: false,
+            order: 3,
           },
           {
-            label: "c₂·n² = 7n²  (upper)",
+            label: "c₂·n² = 5n²  (upper)",
             data: hiArr,
             borderColor: "#dc2626",
             borderWidth: 2.5,
             pointRadius: 0,
             tension: 0.1,
-            order: 3,
+            // Fill downward to the lower bound (dataset index 0)
+            backgroundColor: "rgba(134, 239, 172, 0.20)",
+            fill: { target: 0, above: "rgba(134, 239, 172, 0.20)" },
+            order: 2,
+          },
+          {
+            label: "f(n) = 4n² + 8n + 12",
+            data: fArr,
+            borderColor: "#2563eb",
+            borderWidth: 3,
+            borderDash: [7, 3],
+            pointRadius: 0,
+            tension: 0.1,
+            fill: false,
+            order: 1,
           },
         ],
       },
@@ -345,13 +352,14 @@
               n0Line: {
                 type: "line",
                 scaleID: "x",
+                // With a linear scale, value maps directly to n=10 on the x-axis
                 value: N0,
                 borderColor: "#94a3b8",
                 borderWidth: 1.5,
                 borderDash: [6, 4],
                 label: {
                   display: true,
-                  content: "n₀ = 103",
+                  content: "n₀ = 10",
                   position: "start",
                   backgroundColor: "rgba(148,163,184,0.15)",
                   color: "#475569",
@@ -365,6 +373,8 @@
         },
         scales: {
           x: {
+            // Linear scale ensures annotation value maps to actual n, not array index
+            type: "linear",
             title: {
               display: true,
               text: "n",
@@ -375,6 +385,7 @@
               maxTicksLimit: 10,
               color: "#64748b",
               font: { size: 11 },
+              precision: 0,
             },
             grid: { color: "#f1f5f9" },
           },
@@ -399,11 +410,11 @@
   }
 
   // ── Custom tooltip ───────────────────────────────────────────────
-  const ttEl    = document.getElementById("tooltip");
-  const ttN     = ttEl.querySelector(".tt-n");
-  const ttFn    = ttEl.querySelector(".tt-fn");
-  const ttLo    = ttEl.querySelector(".tt-lo");
-  const ttUp    = ttEl.querySelector(".tt-up");
+  const ttEl      = document.getElementById("tooltip");
+  const ttN       = ttEl.querySelector(".tt-n");
+  const ttFn      = ttEl.querySelector(".tt-fn");
+  const ttLo      = ttEl.querySelector(".tt-lo");
+  const ttUp      = ttEl.querySelector(".tt-up");
   const ttVerdict = ttEl.querySelector(".tt-verdict");
 
   document.getElementById("chart").addEventListener("mousemove", (e) => {
@@ -412,15 +423,16 @@
     if (!pts.length) { ttEl.classList.remove("visible"); return; }
 
     const idx = pts[0].index;
-    const n   = chart.data.labels[idx];
-    const fn  = chart.data.datasets[0].data[idx];
-    const lo  = chart.data.datasets[1].data[idx];
-    const hi  = chart.data.datasets[2].data[idx];
+    // Datasets are ordered: 0=lower, 1=upper, 2=f(n); each point is {x, y}
+    const n  = chart.data.datasets[0].data[idx].x;
+    const lo = chart.data.datasets[0].data[idx].y;
+    const hi = chart.data.datasets[1].data[idx].y;
+    const fn = chart.data.datasets[2].data[idx].y;
 
-    ttN.textContent       = `n = ${n}`;
-    ttFn.textContent      = `f(n)  = ${fn.toLocaleString()}`;
-    ttLo.textContent      = `5n²   = ${lo.toLocaleString()}`;
-    ttUp.textContent      = `7n²   = ${hi.toLocaleString()}`;
+    ttN.textContent  = `n = ${n}`;
+    ttFn.textContent = `f(n) = ${fn.toLocaleString()}`;
+    ttLo.textContent = `3n²  = ${lo.toLocaleString()}`;
+    ttUp.textContent = `5n²  = ${hi.toLocaleString()}`;
 
     const sandwichHolds = lo <= fn && fn <= hi;
     if (sandwichHolds) {
@@ -431,12 +443,11 @@
       ttVerdict.textContent = "✗ f(n) exceeds upper bound";
     }
 
-    // position tooltip near cursor, keep in viewport
+    // Position tooltip near cursor, keep within viewport
     const pad = 14;
     let left = e.clientX + pad;
     let top  = e.clientY + pad;
     ttEl.classList.add("visible");
-    // wait a frame for size
     requestAnimationFrame(() => {
       const tw = ttEl.offsetWidth, th = ttEl.offsetHeight;
       if (left + tw > window.innerWidth  - pad) left = e.clientX - tw - pad;

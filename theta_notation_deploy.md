@@ -29,7 +29,7 @@ The visualization loads React/Recharts entirely from CDN — no build step is re
 <iframe
   src="https://clarkcollege-cse-softwareengineering.github.io/cse320-visualizations/theta_notation.html"
   width="100%"
-  height="680"
+  height="840"
   style="border:none; border-radius:10px;"
   title="Theta Notation Tight Bound Visualization">
 </iframe>
