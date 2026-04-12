@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Θ(n²) Tight Bound Visualization — CSE320</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f8f9fb;
+      color: #1e293b;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      padding: 2rem 2.25rem;
+      max-width: 860px;
+      width: 100%;
+    }
+
+    /* ── Header ── */
+    .header { margin-bottom: 1.5rem; }
+    .course-tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #6366f1;
+      background: #eef2ff;
+      border-radius: 999px;
+      padding: 0.2rem 0.75rem;
+      margin-bottom: 0.6rem;
+    }
+    h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 0.25rem;
+    }
+    .subtitle {
+      font-size: 0.9rem;
+      color: #64748b;
+      font-family: "Courier New", monospace;
+    }
+
+    /* ── Legend ── */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.1rem;
+      margin-bottom: 1.25rem;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.84rem;
+      font-weight: 500;
+    }
+    .legend-line {
+      width: 32px;
+      height: 3px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .legend-line.dashed {
+      background: repeating-linear-gradient(
+        to right,
+        #2563eb 0, #2563eb 6px,
+        transparent 6px, transparent 10px
+      );
+    }
+
+    /* ── Chart wrapper ── */
+    .chart-wrapper {
+      position: relative;
+      width: 100%;
+      height: 380px;
+      margin-bottom: 1.25rem;
+    }
+
+    /* ── Zoom controls ── */
+    .zoom-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .zoom-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #475569;
+      margin-right: 0.25rem;
+    }
+    .zoom-btn {
+      padding: 0.3rem 0.85rem;
+      border-radius: 6px;
+      border: 1.5px solid #e2e8f0;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .zoom-btn:hover { background: #e2e8f0; }
+    .zoom-btn.active {
+      background: #4f46e5;
+      border-color: #4f46e5;
+      color: #fff;
+    }
+
+    /* ── Info panels ── */
+    .panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    @media (max-width: 560px) { .panels { grid-template-columns: 1fr; } }
+
+    .panel {
+      border-radius: 10px;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.84rem;
+      line-height: 1.55;
+    }
+    .panel-before {
+      background: #fff5f5;
+      border: 1.5px solid #fecaca;
+    }
+    .panel-after {
+      background: #f0fdf4;
+      border: 1.5px solid #bbf7d0;
+    }
+    .panel-title {
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+    }
+    .panel-before .panel-title { color: #dc2626; }
+    .panel-after  .panel-title { color: #16a34a; }
+    .panel-before p { color: #7f1d1d; }
+    .panel-after  p { color: #14532d; }
+
+    /* ── Formal statement ── */
+    .formal {
+      background: #f1f5f9;
+      border-left: 4px solid #6366f1;
+      border-radius: 0 8px 8px 0;
+      padding: 0.75rem 1rem;
+      font-family: "Courier New", monospace;
+      font-size: 0.82rem;
+      color: #334155;
+      line-height: 1.7;
+    }
+    .formal strong { color: #4f46e5; }
+
+    /* ── Tooltip ── */
+    #tooltip {
+      position: fixed;
+      pointer-events: none;
+      background: rgba(15,23,42,0.92);
+      color: #f8fafc;
+      border-radius: 8px;
+      padding: 0.55rem 0.85rem;
+      font-size: 0.8rem;
+      line-height: 1.6;
+      max-width: 220px;
+      opacity: 0;
+      transition: opacity 0.12s;
+      z-index: 999;
+    }
+    #tooltip.visible { opacity: 1; }
+    #tooltip .tt-n    { font-weight: 700; margin-bottom: 2px; }
+    #tooltip .tt-fn   { color: #93c5fd; }
+    #tooltip .tt-lo   { color: #86efac; }
+    #tooltip .tt-up   { color: #fca5a5; }
+    #tooltip .tt-verdict { margin-top: 4px; font-weight: 600; font-size: 0.75rem; }
+    #tooltip .tt-ok   { color: #4ade80; }
+    #tooltip .tt-fail { color: #f87171; }
+  </style>
+</head>
+<body>
+<div class="card">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="course-tag">CSE320 · Growth of Functions</div>
+    <h1>Θ(n²) Tight Bound Visualization</h1>
+    <div class="subtitle">f(n) = 6n² + 100n + 300 &nbsp;·&nbsp; c₁ = 5, c₂ = 7, n₀ = 103</div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-line dashed"></div>
+      <span style="color:#2563eb">f(n) = 6n² + 100n + 300</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-line" style="background:#16a34a"></div>
+      <span style="color:#16a34a">c₁·n² = 5n²&nbsp; (lower bound)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-line" style="background:#dc2626"></div>
+      <span style="color:#dc2626">c₂·n² = 7n²&nbsp; (upper bound)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-line" style="background:repeating-linear-gradient(to right,#94a3b8 0,#94a3b8 5px,transparent 5px,transparent 9px)"></div>
+      <span style="color:#64748b">n₀ = 103&nbsp; (threshold)</span>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="chart-wrapper">
+    <canvas id="chart"></canvas>
+  </div>
+
+  <!-- Zoom -->
+  <div class="zoom-row">
+    <span class="zoom-label">Zoom:</span>
+    <button class="zoom-btn" data-max="80">n = 80</button>
+    <button class="zoom-btn" data-max="120">n = 120</button>
+    <button class="zoom-btn active" data-max="160">n = 160</button>
+    <button class="zoom-btn" data-max="220">n = 220</button>
+  </div>
+
+  <!-- Info panels -->
+  <div class="panels">
+    <div class="panel panel-before">
+      <div class="panel-title">✗ &nbsp;Before n₀ = 103</div>
+      <p>f(n) exceeds the upper bound 7n². The extra terms 100n + 300 are still large enough to push f(n) above c₂·n². The sandwich does <em>not</em> yet hold — hover n &lt; 103 to see this.</p>
+    </div>
+    <div class="panel panel-after">
+      <div class="panel-title">✓ &nbsp;After n₀ = 103</div>
+      <p>f(n) is permanently sandwiched between 5n² and 7n². As n grows, n² dominates and the lower-order terms become negligible — exactly what Θ notation captures.</p>
+    </div>
+  </div>
+
+  <!-- Formal statement -->
+  <div class="formal">
+    <strong>Formal statement:</strong>&nbsp; ∃ c₁ = 5, c₂ = 7, n₀ = 103 such that<br>
+    5n² &nbsp;≤&nbsp; 6n² + 100n + 300 &nbsp;≤&nbsp; 7n² &nbsp; for all n ≥ 103<br>
+    <strong>∴</strong>&nbsp; f(n) = Θ(n²)
+  </div>
+
+</div>
+
+<!-- Tooltip -->
+<div id="tooltip">
+  <div class="tt-n"></div>
+  <div class="tt-fn"></div>
+  <div class="tt-lo"></div>
+  <div class="tt-up"></div>
+  <div class="tt-verdict"></div>
+</div>
+
+<script>
+  // ── Data generation ──────────────────────────────────────────────
+  const N0 = 103;
+
+  function buildDatasets(maxN) {
+    const step = maxN <= 100 ? 1 : 2;
+    const labels = [], fArr = [], loArr = [], hiArr = [];
+    for (let n = 1; n <= maxN; n += step) {
+      labels.push(n);
+      fArr.push(6*n*n + 100*n + 300);
+      loArr.push(5*n*n);
+      hiArr.push(7*n*n);
+    }
+    return { labels, fArr, loArr, hiArr };
+  }
+
+  // ── Chart setup ──────────────────────────────────────────────────
+  const ctx = document.getElementById("chart").getContext("2d");
+  let currentMax = 160;
+  let chart;
+
+  function formatK(v) {
+    return v >= 1000 ? (v/1000).toFixed(1) + "k" : v;
+  }
+
+  function buildChart(maxN) {
+    const { labels, fArr, loArr, hiArr } = buildDatasets(maxN);
+
+    if (chart) chart.destroy();
+
+    chart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "f(n) = 6n² + 100n + 300",
+            data: fArr,
+            borderColor: "#2563eb",
+            borderWidth: 2.5,
+            borderDash: [7, 3],
+            pointRadius: 0,
+            tension: 0.1,
+            order: 1,
+          },
+          {
+            label: "c₁·n² = 5n²  (lower)",
+            data: loArr,
+            borderColor: "#16a34a",
+            borderWidth: 2.5,
+            pointRadius: 0,
+            tension: 0.1,
+            order: 2,
+          },
+          {
+            label: "c₂·n² = 7n²  (upper)",
+            data: hiArr,
+            borderColor: "#dc2626",
+            borderWidth: 2.5,
+            pointRadius: 0,
+            tension: 0.1,
+            order: 3,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 280, easing: "easeInOutQuart" },
+        interaction: { mode: "index", intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: false },   // we use our own tooltip
+          annotation: {
+            annotations: {
+              n0Line: {
+                type: "line",
+                scaleID: "x",
+                value: N0,
+                borderColor: "#94a3b8",
+                borderWidth: 1.5,
+                borderDash: [6, 4],
+                label: {
+                  display: true,
+                  content: "n₀ = 103",
+                  position: "start",
+                  backgroundColor: "rgba(148,163,184,0.15)",
+                  color: "#475569",
+                  font: { size: 11, weight: "bold" },
+                  padding: { x: 6, y: 3 },
+                  yAdjust: 8,
+                },
+              },
+            },
+          },
+        },
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: "n",
+              font: { size: 13, style: "italic" },
+              color: "#475569",
+            },
+            ticks: {
+              maxTicksLimit: 10,
+              color: "#64748b",
+              font: { size: 11 },
+            },
+            grid: { color: "#f1f5f9" },
+          },
+          y: {
+            title: {
+              display: true,
+              text: "Value",
+              font: { size: 12 },
+              color: "#475569",
+            },
+            ticks: {
+              callback: formatK,
+              color: "#64748b",
+              font: { size: 11 },
+              maxTicksLimit: 8,
+            },
+            grid: { color: "#f1f5f9" },
+          },
+        },
+      },
+    });
+  }
+
+  // ── Custom tooltip ───────────────────────────────────────────────
+  const ttEl    = document.getElementById("tooltip");
+  const ttN     = ttEl.querySelector(".tt-n");
+  const ttFn    = ttEl.querySelector(".tt-fn");
+  const ttLo    = ttEl.querySelector(".tt-lo");
+  const ttUp    = ttEl.querySelector(".tt-up");
+  const ttVerdict = ttEl.querySelector(".tt-verdict");
+
+  document.getElementById("chart").addEventListener("mousemove", (e) => {
+    if (!chart) return;
+    const pts = chart.getElementsAtEventForMode(e, "index", { intersect: false }, true);
+    if (!pts.length) { ttEl.classList.remove("visible"); return; }
+
+    const idx = pts[0].index;
+    const n   = chart.data.labels[idx];
+    const fn  = chart.data.datasets[0].data[idx];
+    const lo  = chart.data.datasets[1].data[idx];
+    const hi  = chart.data.datasets[2].data[idx];
+
+    ttN.textContent       = `n = ${n}`;
+    ttFn.textContent      = `f(n)  = ${fn.toLocaleString()}`;
+    ttLo.textContent      = `5n²   = ${lo.toLocaleString()}`;
+    ttUp.textContent      = `7n²   = ${hi.toLocaleString()}`;
+
+    const sandwichHolds = lo <= fn && fn <= hi;
+    if (sandwichHolds) {
+      ttVerdict.className   = "tt-verdict tt-ok";
+      ttVerdict.textContent = "✓ Sandwich holds (n ≥ n₀)";
+    } else {
+      ttVerdict.className   = "tt-verdict tt-fail";
+      ttVerdict.textContent = "✗ f(n) exceeds upper bound";
+    }
+
+    // position tooltip near cursor, keep in viewport
+    const pad = 14;
+    let left = e.clientX + pad;
+    let top  = e.clientY + pad;
+    ttEl.classList.add("visible");
+    // wait a frame for size
+    requestAnimationFrame(() => {
+      const tw = ttEl.offsetWidth, th = ttEl.offsetHeight;
+      if (left + tw > window.innerWidth  - pad) left = e.clientX - tw - pad;
+      if (top  + th > window.innerHeight - pad) top  = e.clientY - th - pad;
+      ttEl.style.left = left + "px";
+      ttEl.style.top  = top  + "px";
+    });
+  });
+
+  document.getElementById("chart").addEventListener("mouseleave", () => {
+    ttEl.classList.remove("visible");
+  });
+
+  // ── Zoom buttons ─────────────────────────────────────────────────
+  document.querySelectorAll(".zoom-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".zoom-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentMax = parseInt(btn.dataset.max);
+      buildChart(currentMax);
+    });
+  });
+
+  // ── Initial render ───────────────────────────────────────────────
+  buildChart(currentMax);
+</script>
+</body>
+</html>
